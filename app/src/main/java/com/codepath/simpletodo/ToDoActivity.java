@@ -1,6 +1,7 @@
 package com.codepath.simpletodo;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -56,6 +57,15 @@ public class ToDoActivity extends Activity {
                 itemsAdapter.notifyDataSetChanged();
                 writeItems();
                 return true;
+            }
+        });
+        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View item, int pos, long id) {
+                Intent i = new Intent(ToDoActivity.this, EditItemActivity.class);
+                i.putExtra("position", pos);
+                i.putExtra("text", items.get(pos));
+                startActivity(i);
             }
         });
     }
