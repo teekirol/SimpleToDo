@@ -9,9 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-
 import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,7 +63,7 @@ public class ToDoActivity extends Activity {
                 Intent i = new Intent(ToDoActivity.this, EditItemActivity.class);
                 i.putExtra("position", pos);
                 i.putExtra("text", items.get(pos));
-                startActivity(i);
+                startActivityForResult(i, pos);
             }
         });
     }
@@ -87,6 +85,17 @@ public class ToDoActivity extends Activity {
             FileUtils.writeLines(todoFile, items);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestPosition, int resultPosition, Intent i) {
+        if(requestPosition == resultPosition) {
+            String updatedText = i.getStringExtra("text");
+            items.set(requestPosition, updatedText);
+            itemsAdapter.notifyDataSetChanged();
+            writeItems();
+            writeItems();
         }
     }
 
