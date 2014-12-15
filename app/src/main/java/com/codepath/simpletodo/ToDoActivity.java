@@ -95,7 +95,6 @@ public class ToDoActivity extends Activity {
             items.set(requestPosition, updatedText);
             itemsAdapter.notifyDataSetChanged();
             writeItems();
-            writeItems();
         }
     }
 
