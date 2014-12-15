@@ -12,6 +12,7 @@ public class EditItemActivity extends Activity {
 
     EditText input;
     Button submit;
+    Button cancel;
     int itemPosition;
 
     @Override
@@ -26,16 +27,25 @@ public class EditItemActivity extends Activity {
         // Set the cursor at the end of the line
         input.setSelection(itemText.length());
         submit = (Button) findViewById(R.id.editItemSave);
-        setupButtonListener();
+        cancel = (Button) findViewById(R.id.cancelButton);
+        setupButtonListeners();
     }
 
-    private void setupButtonListener() {
+    private void setupButtonListeners() {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent();
                 i.putExtra("text", input.getText().toString());
                 setResult(itemPosition, i);
+                finish();
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                setResult(-1, i);
                 finish();
             }
         });
