@@ -1,7 +1,9 @@
 package com.codepath.simpletodo;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -9,16 +11,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import org.apache.commons.io.FileUtils;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import com.codepath.simpletodo.ToDoContract.ToDoEntry;
 
 public class ToDoActivity extends Activity {
 
-    ArrayList<String> items;
-    ArrayAdapter<String> itemsAdapter;
+    ArrayList<ToDoItem> items;
+    ArrayAdapter<ToDoItem> itemsAdapter;
     ListView lvItems;
+
+    static final int SUCCESS = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +28,7 @@ public class ToDoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         lvItems = (ListView) findViewById(R.id.lvItems);
-        itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+        itemsAdapter = new ArrayAdapter<ToDoItem>(this, android.R.layout.simple_list_item_1, items);
         lvItems.setAdapter(itemsAdapter);
         setupListViewListener();
     }
@@ -42,18 +44,18 @@ public class ToDoActivity extends Activity {
     public void onAddItem(View v) {
         EditText etNewItem = (EditText) findViewById(R.id.etNewItem);
         String itemText = etNewItem.getText().toString();
-        itemsAdapter.add(itemText);
+        long itemId = insert(itemText);
+        itemsAdapter.add(new ToDoItem(itemId, itemText));
         etNewItem.setText("");
-        writeItems();
     }
 
     private void setupListViewListener() {
         lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapter, View item, int pos, long id) {
+                markCompleted(items.get(pos));
                 items.remove(pos);
                 itemsAdapter.notifyDataSetChanged();
-                writeItems();
                 return true;
             }
         });
@@ -62,39 +64,86 @@ public class ToDoActivity extends Activity {
             public void onItemClick(AdapterView<?> adapter, View item, int pos, long id) {
                 Intent i = new Intent(ToDoActivity.this, EditItemActivity.class);
                 i.putExtra("position", pos);
-                i.putExtra("text", items.get(pos));
-                startActivityForResult(i, pos);
+                i.putExtra("id", items.get(pos).getId());
+                i.putExtra("text", items.get(pos).getText());
+                startActivityForResult(i, SUCCESS);
             }
         });
     }
 
     private void readItems() {
-        File filesDir = getFilesDir();
-        File todoFile = new File(filesDir, "todo.txt");
-        try {
-            items = new ArrayList<String>(FileUtils.readLines(todoFile));
-        } catch (IOException e) {
-            items = new ArrayList<String>();
-        }
+          String[] projection = { ToDoEntry.COLUMN_NAME_ID, ToDoEntry.COLUMN_NAME_TEXT };
+          String selection = ToDoEntry.COLUMN_NAME_COMPLETED + " = 0";
+          String sortOrder = ToDoEntry.COLUMN_NAME_ID + " ASC";
+          ToDoDbHelper dbHelper = new ToDoDbHelper(getApplicationContext());
+          Cursor cursor = dbHelper.getReadableDatabase().query(
+                  ToDoEntry.TABLE_NAME,
+                  projection,
+                  selection,
+                  null,
+                  null,
+                  null,
+                  sortOrder
+          );
+          cursor.moveToFirst();
+          items = new ArrayList<ToDoItem>();
+          while(!cursor.isAfterLast() && cursor.getCount() > 0) {
+              int itemId = cursor.getInt(cursor.getColumnIndex(ToDoEntry.COLUMN_NAME_ID));
+              String itemText = cursor.getString(cursor.getColumnIndex(ToDoEntry.COLUMN_NAME_TEXT));
+              items.add(new ToDoItem(itemId, itemText));
+              cursor.moveToNext();
+          }
     }
 
-    private void writeItems() {
-        File filesDir = getFilesDir();
-        File todoFile = new File(filesDir, "todo.txt");
-        try {
-            FileUtils.writeLines(todoFile, items);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private long insert(String item) {
+        ContentValues values = new ContentValues(1);
+        values.put(ToDoEntry.COLUMN_NAME_TEXT, item);
+        ToDoDbHelper dbHelper = new ToDoDbHelper(getApplicationContext());
+        return dbHelper.getWritableDatabase().insert(
+                ToDoEntry.TABLE_NAME,
+                null,
+                values
+        );
+    }
+
+    private void markCompleted(ToDoItem item) {
+        ContentValues values = new ContentValues(1);
+        values.put(ToDoEntry.COLUMN_NAME_COMPLETED, 1);
+        String whereClause = ToDoEntry.COLUMN_NAME_ID + " = ?";
+        String[] whereArgs = { item.getId() + "" };
+        ToDoDbHelper dbHelper = new ToDoDbHelper(getApplicationContext());
+        dbHelper.getWritableDatabase().update(
+                ToDoEntry.TABLE_NAME,
+                values,
+                whereClause,
+                whereArgs
+        );
+    }
+
+    private void update(ToDoItem item) {
+        ContentValues values = new ContentValues(1);
+        values.put(ToDoEntry.COLUMN_NAME_TEXT, item.getText());
+        String whereClause = ToDoEntry.COLUMN_NAME_ID + " = ?";
+        String[] whereArgs = { item.getId() + "" };
+        ToDoDbHelper dbHelper = new ToDoDbHelper(getApplicationContext());
+        dbHelper.getWritableDatabase().update(
+                ToDoEntry.TABLE_NAME,
+                values,
+                whereClause,
+                whereArgs
+        );
     }
 
     @Override
-    protected void onActivityResult(int requestPosition, int resultPosition, Intent i) {
-        if(requestPosition == resultPosition) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent i) {
+        if(requestCode == resultCode) {
+            int position = i.getIntExtra("position", -1);
+            long updatedId = i.getLongExtra("id", -1);
             String updatedText = i.getStringExtra("text");
-            items.set(requestPosition, updatedText);
+            ToDoItem item = new ToDoItem(updatedId, updatedText);
+            items.set(position, item);
             itemsAdapter.notifyDataSetChanged();
-            writeItems();
+            update(item);
         }
     }
 

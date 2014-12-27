@@ -13,13 +13,15 @@ public class EditItemActivity extends Activity {
     EditText input;
     Button submit;
     Button cancel;
-    int itemPosition;
+    long itemId;
+    int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
-        itemPosition = getIntent().getIntExtra("position", -1);
+        itemId = getIntent().getLongExtra("id", -1);
+        position = getIntent().getIntExtra("position", -1);
         String itemText = getIntent().getStringExtra("text");
         input = (EditText) findViewById(R.id.editText);
         input.setText(itemText);
@@ -36,8 +38,10 @@ public class EditItemActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent();
+                i.putExtra("id", itemId);
                 i.putExtra("text", input.getText().toString());
-                setResult(itemPosition, i);
+                i.putExtra("position", position);
+                setResult(ToDoActivity.SUCCESS, i);
                 finish();
             }
         });

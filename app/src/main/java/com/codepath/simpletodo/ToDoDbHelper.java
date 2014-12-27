@@ -17,10 +17,9 @@ public class ToDoDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
             "CREATE TABLE " + ToDoEntry.TABLE_NAME + "(" +
-            ToDoEntry.COLUMN_NAME_ID + " INTEGER PRIMARY KEY," +
+            ToDoEntry.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             ToDoEntry.COLUMN_NAME_TEXT + " TEXT," +
-            ToDoEntry.COLUMN_NAME_POSITION + " INTEGER," +
-            ToDoEntry.COLUMN_NAME_COMPLETED + " BOOLEAN)"
+            ToDoEntry.COLUMN_NAME_COMPLETED + " BOOLEAN DEFAULT 0)"
         );
     }
 
