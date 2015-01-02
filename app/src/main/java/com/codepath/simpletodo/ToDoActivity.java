@@ -17,7 +17,7 @@ import com.codepath.simpletodo.ToDoContract.ToDoEntry;
 public class ToDoActivity extends Activity {
 
     ArrayList<ToDoItem> items;
-    ArrayAdapter<ToDoItem> itemsAdapter;
+    ToDoAdapter itemsAdapter;
     ListView lvItems;
 
     static final int SUCCESS = 200;
@@ -28,7 +28,7 @@ public class ToDoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         lvItems = (ListView) findViewById(R.id.lvItems);
-        itemsAdapter = new ArrayAdapter<ToDoItem>(this, android.R.layout.simple_list_item_1, items);
+        itemsAdapter = new ToDoAdapter(this, items);
         lvItems.setAdapter(itemsAdapter);
         setupListViewListener();
     }

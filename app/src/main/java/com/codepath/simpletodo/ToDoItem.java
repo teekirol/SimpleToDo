@@ -18,8 +18,4 @@ public class ToDoItem {
         return this.text;
     }
 
-    public String toString() {
-        return this.text;
-    }
-
 }
