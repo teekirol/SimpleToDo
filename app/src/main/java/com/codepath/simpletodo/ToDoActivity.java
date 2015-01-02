@@ -14,6 +14,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import com.codepath.simpletodo.ToDoContract.ToDoEntry;
 
+import org.joda.time.DateTime;
+
 public class ToDoActivity extends Activity {
 
     ArrayList<ToDoItem> items;
@@ -45,7 +47,7 @@ public class ToDoActivity extends Activity {
         EditText etNewItem = (EditText) findViewById(R.id.etNewItem);
         String itemText = etNewItem.getText().toString();
         long itemId = insert(itemText);
-        itemsAdapter.add(new ToDoItem(itemId, itemText));
+        itemsAdapter.add(new ToDoItem(itemId, itemText, null));
         etNewItem.setText("");
     }
 
@@ -90,7 +92,7 @@ public class ToDoActivity extends Activity {
           while(!cursor.isAfterLast() && cursor.getCount() > 0) {
               int itemId = cursor.getInt(cursor.getColumnIndex(ToDoEntry.COLUMN_NAME_ID));
               String itemText = cursor.getString(cursor.getColumnIndex(ToDoEntry.COLUMN_NAME_TEXT));
-              items.add(new ToDoItem(itemId, itemText));
+              items.add(new ToDoItem(itemId, itemText, null));
               cursor.moveToNext();
           }
     }
@@ -140,7 +142,7 @@ public class ToDoActivity extends Activity {
             int position = i.getIntExtra("position", -1);
             long updatedId = i.getLongExtra("id", -1);
             String updatedText = i.getStringExtra("text");
-            ToDoItem item = new ToDoItem(updatedId, updatedText);
+            ToDoItem item = new ToDoItem(updatedId, updatedText, null);
             items.set(position, item);
             itemsAdapter.notifyDataSetChanged();
             update(item);

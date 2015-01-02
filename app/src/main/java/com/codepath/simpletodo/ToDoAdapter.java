@@ -21,6 +21,8 @@ public class ToDoAdapter extends ArrayAdapter<ToDoItem> {
         }
         TextView itemText = (TextView) convertView.findViewById(R.id.toDoText);
         itemText.setText(getItem(position).getText());
+        TextView dueDate = (TextView) convertView.findViewById(R.id.dueDate);
+        dueDate.setText("No due date");
         return convertView;
     }
 }
