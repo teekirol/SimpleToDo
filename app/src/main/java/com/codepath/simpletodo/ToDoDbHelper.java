@@ -4,10 +4,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.codepath.simpletodo.ToDoContract.ToDoEntry;
+import org.joda.time.DateTime;
 
 public class ToDoDbHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "ToDo.db";
 
     public ToDoDbHelper(Context context) {
@@ -19,12 +20,12 @@ public class ToDoDbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + ToDoEntry.TABLE_NAME + "(" +
             ToDoEntry.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             ToDoEntry.COLUMN_NAME_TEXT + " TEXT," +
-            ToDoEntry.COLUMN_NAME_COMPLETED + " BOOLEAN DEFAULT 0)"
+            ToDoEntry.COLUMN_NAME_COMPLETED + " BOOLEAN DEFAULT 0," +
+            ToDoEntry.COLUMN_NAME_DUE_DATE + " DATETIME)"
         );
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // TODO Copy table content into new db
         db.execSQL("DROP TABLE IF EXISTS " + ToDoEntry.TABLE_NAME);
         onCreate(db);
     }
@@ -32,4 +33,5 @@ public class ToDoDbHelper extends SQLiteOpenHelper {
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
+
 }

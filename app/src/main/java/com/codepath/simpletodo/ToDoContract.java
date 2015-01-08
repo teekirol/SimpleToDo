@@ -12,5 +12,6 @@ public final class ToDoContract {
         public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_TEXT = "text";
         public static final String COLUMN_NAME_COMPLETED = "completed";
+        public static final String COLUMN_NAME_DUE_DATE = "due";
     }
 }

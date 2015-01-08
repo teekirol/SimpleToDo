@@ -22,6 +22,11 @@ public class ToDoItem {
         return this.text;
     }
 
-    public DateTime getDueDate() { return this.dueDate; }
-
+    public String getDueDate() {
+        if (this.dueDate == null) {
+            return "";
+        } else {
+            return this.dueDate.toString();
+        }
+    }
 }

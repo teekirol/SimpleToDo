@@ -74,7 +74,11 @@ public class ToDoActivity extends Activity {
     }
 
     private void readItems() {
-          String[] projection = { ToDoEntry.COLUMN_NAME_ID, ToDoEntry.COLUMN_NAME_TEXT };
+          String[] projection = {
+                  ToDoEntry.COLUMN_NAME_ID,
+                  ToDoEntry.COLUMN_NAME_TEXT,
+                  ToDoEntry.COLUMN_NAME_DUE_DATE
+          };
           String selection = ToDoEntry.COLUMN_NAME_COMPLETED + " = 0";
           String sortOrder = ToDoEntry.COLUMN_NAME_ID + " ASC";
           ToDoDbHelper dbHelper = new ToDoDbHelper(getApplicationContext());
@@ -92,7 +96,12 @@ public class ToDoActivity extends Activity {
           while(!cursor.isAfterLast() && cursor.getCount() > 0) {
               int itemId = cursor.getInt(cursor.getColumnIndex(ToDoEntry.COLUMN_NAME_ID));
               String itemText = cursor.getString(cursor.getColumnIndex(ToDoEntry.COLUMN_NAME_TEXT));
-              items.add(new ToDoItem(itemId, itemText, null));
+              String dateStr = cursor.getString(cursor.getColumnIndex(ToDoEntry.COLUMN_NAME_DUE_DATE));
+              DateTime dueDate = null;
+              if(dateStr != null && !dateStr.isEmpty()) {
+                  dueDate = DateTime.parse(dateStr);
+              }
+              items.add(new ToDoItem(itemId, itemText, dueDate));
               cursor.moveToNext();
           }
     }
@@ -125,6 +134,7 @@ public class ToDoActivity extends Activity {
     private void update(ToDoItem item) {
         ContentValues values = new ContentValues(1);
         values.put(ToDoEntry.COLUMN_NAME_TEXT, item.getText());
+        values.put(ToDoEntry.COLUMN_NAME_DUE_DATE, item.getDueDate());
         String whereClause = ToDoEntry.COLUMN_NAME_ID + " = ?";
         String[] whereArgs = { item.getId() + "" };
         ToDoDbHelper dbHelper = new ToDoDbHelper(getApplicationContext());
@@ -142,7 +152,12 @@ public class ToDoActivity extends Activity {
             int position = i.getIntExtra("position", -1);
             long updatedId = i.getLongExtra("id", -1);
             String updatedText = i.getStringExtra("text");
-            ToDoItem item = new ToDoItem(updatedId, updatedText, null);
+            String updatedDate = i.getStringExtra("dueDate");
+            DateTime dueDate = null;
+            if(updatedDate != null && !updatedDate.isEmpty()) {
+                dueDate = DateTime.parse(updatedDate);
+            }
+            ToDoItem item = new ToDoItem(updatedId, updatedText, dueDate);
             items.set(position, item);
             itemsAdapter.notifyDataSetChanged();
             update(item);

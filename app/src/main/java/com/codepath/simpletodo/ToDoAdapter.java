@@ -19,10 +19,15 @@ public class ToDoAdapter extends ArrayAdapter<ToDoItem> {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_todo, parent, false);
         }
+        ToDoItem item = getItem(position);
         TextView itemText = (TextView) convertView.findViewById(R.id.toDoText);
-        itemText.setText(getItem(position).getText());
+        itemText.setText(item.getText());
         TextView dueDate = (TextView) convertView.findViewById(R.id.dueDate);
-        dueDate.setText("No due date");
+        if (item.getDueDate().isEmpty()) {
+            dueDate.setText("(no due date)");
+        } else {
+            dueDate.setText(item.getDueDate());
+        }
         return convertView;
     }
 }
