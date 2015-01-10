@@ -13,11 +13,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-
 import org.joda.time.DateTime;
 
-
-public class EditItemActivity extends FragmentActivity {
+public class EditItemActivity extends FragmentActivity implements DatePickerDialog.OnDateSetListener {
 
     EditText input;
     EditText dueDate;
@@ -25,6 +23,10 @@ public class EditItemActivity extends FragmentActivity {
     Button cancel;
     long itemId;
     int position;
+
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        dueDate.setText(new DateTime(year, monthOfYear, dayOfMonth, 0, 0, 0).toString());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,29 +77,6 @@ public class EditItemActivity extends FragmentActivity {
                 finish();
             }
         });
-    }
-
-    public static class DatePickerDialogFragment extends DialogFragment {
-
-        public DatePickerDialogFragment() { }
-
-        public DatePickerDialogFragment newInstance() {
-            return new DatePickerDialogFragment();
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            DateTime now = DateTime.now();
-            DatePickerDialog datepicker = new DatePickerDialog(getActivity(),
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
-                    }
-                }, now.getYear(), now.getMonthOfYear(), now.getDayOfMonth());
-            return datepicker;
-        }
-
     }
 
 }
