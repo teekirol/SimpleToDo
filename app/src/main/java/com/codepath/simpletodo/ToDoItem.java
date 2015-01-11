@@ -7,6 +7,7 @@ public class ToDoItem {
     private long id;
     private String text;
     private DateTime dueDate;
+    public static String DATE_FORMAT = "EEE MMM d yyyy";
 
     public ToDoItem(long id, String text, DateTime dueDate) {
         this.id = id;
@@ -26,7 +27,7 @@ public class ToDoItem {
         if (this.dueDate == null) {
             return "";
         } else {
-            return this.dueDate.toString();
+            return this.dueDate.toString(DATE_FORMAT);
         }
     }
 }

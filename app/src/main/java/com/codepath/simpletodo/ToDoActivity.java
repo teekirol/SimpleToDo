@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import com.codepath.simpletodo.ToDoContract.ToDoEntry;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public class ToDoActivity extends Activity {
 
@@ -156,7 +158,7 @@ public class ToDoActivity extends Activity {
             String updatedDate = i.getStringExtra("date");
             DateTime dueDate = null;
             if(updatedDate != null && !updatedDate.isEmpty()) {
-                dueDate = DateTime.parse(updatedDate);
+                dueDate = DateTime.parse(updatedDate, DateTimeFormat.forPattern(ToDoItem.DATE_FORMAT));
             }
             ToDoItem item = new ToDoItem(updatedId, updatedText, dueDate);
             items.set(position, item);

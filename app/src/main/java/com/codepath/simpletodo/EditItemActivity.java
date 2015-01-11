@@ -21,7 +21,8 @@ public class EditItemActivity extends FragmentActivity implements DatePickerDial
     int position;
 
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        dueDate.setText(new DateTime(year, monthOfYear+1, dayOfMonth, 0, 0, 0).toString());
+        DateTime date = new DateTime(year, monthOfYear+1, dayOfMonth, 0, 0, 0);
+        dueDate.setText(date.toString(ToDoItem.DATE_FORMAT));
     }
 
     @Override
