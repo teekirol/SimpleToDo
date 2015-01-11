@@ -30,4 +30,8 @@ public class ToDoItem {
             return this.dueDate.toString(DATE_FORMAT);
         }
     }
+
+    public DateTime getRawDueDate() {
+        return this.dueDate;
+    }
 }

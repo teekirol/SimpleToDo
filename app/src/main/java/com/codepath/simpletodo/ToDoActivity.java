@@ -8,15 +8,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import java.util.ArrayList;
 import com.codepath.simpletodo.ToDoContract.ToDoEntry;
-
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 public class ToDoActivity extends Activity {
 
@@ -137,7 +134,7 @@ public class ToDoActivity extends Activity {
     private void update(ToDoItem item) {
         ContentValues values = new ContentValues(1);
         values.put(ToDoEntry.COLUMN_NAME_TEXT, item.getText());
-        values.put(ToDoEntry.COLUMN_NAME_DUE_DATE, item.getDueDate());
+        values.put(ToDoEntry.COLUMN_NAME_DUE_DATE, item.getRawDueDate().toString());
         String whereClause = ToDoEntry.COLUMN_NAME_ID + " = ?";
         String[] whereArgs = { item.getId() + "" };
         ToDoDbHelper dbHelper = new ToDoDbHelper(getApplicationContext());
