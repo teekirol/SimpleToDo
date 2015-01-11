@@ -1,13 +1,16 @@
 package com.codepath.simpletodo;
 
-import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import java.util.ArrayList;
@@ -15,11 +18,12 @@ import com.codepath.simpletodo.ToDoContract.ToDoEntry;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
-public class ToDoActivity extends Activity {
+public class ToDoActivity extends FragmentActivity implements DatePickerDialog.OnDateSetListener{
 
     ArrayList<ToDoItem> items;
     ToDoAdapter itemsAdapter;
     ListView lvItems;
+    EditText dueDate;
 
     static final int SUCCESS = 200;
 
@@ -31,9 +35,14 @@ public class ToDoActivity extends Activity {
         lvItems = (ListView) findViewById(R.id.lvItems);
         itemsAdapter = new ToDoAdapter(this, items);
         lvItems.setAdapter(itemsAdapter);
+        dueDate = (EditText) findViewById(R.id.etDueDate);
         setupListViewListener();
     }
 
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        DateTime date = new DateTime(year, monthOfYear+1, dayOfMonth, 0, 0, 0);
+        dueDate.setText(date.toString(ToDoItem.DATE_FORMAT));
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -45,12 +54,25 @@ public class ToDoActivity extends Activity {
     public void onAddItem(View v) {
         EditText etNewItem = (EditText) findViewById(R.id.etNewItem);
         String itemText = etNewItem.getText().toString();
-        long itemId = insert(itemText);
-        itemsAdapter.add(new ToDoItem(itemId, itemText, null));
+        DateTime d = null;
+        if(!dueDate.getText().toString().isEmpty()) {
+            d = DateTime.parse(dueDate.getText().toString(), DateTimeFormat.forPattern(ToDoItem.DATE_FORMAT));
+        }
+        long itemId = insert(itemText, d);
+        itemsAdapter.add(new ToDoItem(itemId, itemText, d));
         etNewItem.setText("");
+        dueDate.setText("");
     }
 
     private void setupListViewListener() {
+        dueDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getSupportFragmentManager();
+                DatePickerDialogFragment datepicker = new DatePickerDialogFragment();
+                datepicker.show(fm, "date_picker");
+            }
+        });
         lvItems.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapter, View item, int pos, long id) {
@@ -106,9 +128,12 @@ public class ToDoActivity extends Activity {
           }
     }
 
-    private long insert(String item) {
+    private long insert(String item, DateTime dueDate) {
         ContentValues values = new ContentValues(1);
         values.put(ToDoEntry.COLUMN_NAME_TEXT, item);
+        if(dueDate != null) {
+            values.put(ToDoEntry.COLUMN_NAME_DUE_DATE, dueDate.toString());
+        }
         ToDoDbHelper dbHelper = new ToDoDbHelper(getApplicationContext());
         return dbHelper.getWritableDatabase().insert(
                 ToDoEntry.TABLE_NAME,
