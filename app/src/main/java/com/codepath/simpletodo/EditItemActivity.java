@@ -1,12 +1,8 @@
 package com.codepath.simpletodo;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
@@ -25,7 +21,7 @@ public class EditItemActivity extends FragmentActivity implements DatePickerDial
     int position;
 
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        dueDate.setText(new DateTime(year, monthOfYear, dayOfMonth, 0, 0, 0).toString());
+        dueDate.setText(new DateTime(year, monthOfYear+1, dayOfMonth, 0, 0, 0).toString());
     }
 
     @Override
@@ -35,11 +31,13 @@ public class EditItemActivity extends FragmentActivity implements DatePickerDial
         itemId = getIntent().getLongExtra("id", -1);
         position = getIntent().getIntExtra("position", -1);
 
-        dueDate = (EditText) findViewById(R.id.editDate);
-
         String itemText = getIntent().getStringExtra("text");
         input = (EditText) findViewById(R.id.editText);
         input.setText(itemText);
+
+        String dueDateText = getIntent().getStringExtra("date");
+        dueDate = (EditText) findViewById(R.id.editDate);
+        dueDate.setText(dueDateText);
 
         // Set the cursor at the end of the line
         input.setSelection(itemText.length());
@@ -64,6 +62,7 @@ public class EditItemActivity extends FragmentActivity implements DatePickerDial
                 Intent i = new Intent();
                 i.putExtra("id", itemId);
                 i.putExtra("text", input.getText().toString());
+                i.putExtra("date", dueDate.getText().toString());
                 i.putExtra("position", position);
                 setResult(ToDoActivity.SUCCESS, i);
                 finish();

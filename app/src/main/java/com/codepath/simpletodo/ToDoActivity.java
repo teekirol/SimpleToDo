@@ -68,6 +68,7 @@ public class ToDoActivity extends Activity {
                 i.putExtra("position", pos);
                 i.putExtra("id", items.get(pos).getId());
                 i.putExtra("text", items.get(pos).getText());
+                i.putExtra("date", items.get(pos).getDueDate());
                 startActivityForResult(i, SUCCESS);
             }
         });
@@ -152,7 +153,7 @@ public class ToDoActivity extends Activity {
             int position = i.getIntExtra("position", -1);
             long updatedId = i.getLongExtra("id", -1);
             String updatedText = i.getStringExtra("text");
-            String updatedDate = i.getStringExtra("dueDate");
+            String updatedDate = i.getStringExtra("date");
             DateTime dueDate = null;
             if(updatedDate != null && !updatedDate.isEmpty()) {
                 dueDate = DateTime.parse(updatedDate);
