@@ -19,7 +19,7 @@ public class DatePickerDialogFragment extends DialogFragment {
         DateTime now = DateTime.now();
         DatePickerDialog datepicker = new DatePickerDialog(getActivity(),
                 (EditItemActivity) getActivity(), now.getYear(),
-                now.getMonthOfYear(), now.getDayOfMonth());
+                now.getMonthOfYear()-1, now.getDayOfMonth());
         return datepicker;
     }
 
