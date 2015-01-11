@@ -24,7 +24,7 @@ public class ToDoAdapter extends ArrayAdapter<ToDoItem> {
         itemText.setText(item.getText());
         TextView dueDate = (TextView) convertView.findViewById(R.id.dueDate);
         if (item.getDueDate().isEmpty()) {
-            dueDate.setText("(no due date)");
+            dueDate.setText("(No due date)");
         } else {
             dueDate.setText("Due: " + item.getDueDate());
         }
